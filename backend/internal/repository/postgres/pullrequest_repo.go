@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"errors"
+	"math/rand"
 	"time"
 
 	"github.com/ArtemST2006/Avito_internship/backend/internal/schemas"
@@ -109,34 +110,26 @@ func (p *PullRequestRepo) ChangeAuthorPR(req schemas.PRChangeAuthorRequest) (sch
 	var pr schemas.PullRequest
 	err := p.db.Where("pull_request_id = ?", req.PullRequestID).First(&pr).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return response, projerrors.ErrNotFound // 404
+		}
 		return response, err
 	}
 
 	if pr.Status == "MERGED" {
-		return response, projerrors.ErrAlreadyMerged
+		return response, projerrors.ErrAlreadyMerged // 409: PR_MERGED
 	}
 
 	var oldReviewer schemas.User
 	err = p.db.Where("user_id = ?", req.OldUserID).First(&oldReviewer).Error
 	if err != nil {
-		return response, err
-	}
-
-	var newReviewer schemas.User
-	err = p.db.Where(
-		"team_name = ? AND user_id != ? AND is_active = ? AND user_id NOT IN ?",
-		oldReviewer.TeamName,
-		req.OldUserID,
-		true,
-		pr.AssignedReviewers,
-	).First(&newReviewer).Error
-	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return response, projerrors.ErrNoCandidate
+			return response, projerrors.ErrNotFound // 404
 		}
 		return response, err
 	}
 
+	// 4. Проверить, что старый ревьювер назначен в PR
 	oldReviewerIndex := -1
 	for i, reviewerID := range pr.AssignedReviewers {
 		if reviewerID == req.OldUserID {
@@ -144,10 +137,42 @@ func (p *PullRequestRepo) ChangeAuthorPR(req schemas.PRChangeAuthorRequest) (sch
 			break
 		}
 	}
-
 	if oldReviewerIndex == -1 {
-		return response, errors.New("old reviewer not found in PR reviewers list")
+		return response, projerrors.ErrNoAssign // 409: NOT_ASSIGNED
 	}
+
+	candidateReviewers := make([]schemas.User, 0)
+	err = p.db.Where(
+		"team_name = ? AND user_id != ? AND user_id != ? AND is_active = ?",
+		oldReviewer.TeamName,
+		req.OldUserID,
+		pr.AuthorID,
+		true,
+	).Find(&candidateReviewers).Error
+	if err != nil {
+		return response, err
+	}
+
+	finalCandidates := make([]schemas.User, 0)
+	for _, candidate := range candidateReviewers {
+		isAlreadyAssigned := false
+		for _, assignedID := range pr.AssignedReviewers {
+			if candidate.UserId == assignedID {
+				isAlreadyAssigned = true
+				break
+			}
+		}
+		if !isAlreadyAssigned {
+			finalCandidates = append(finalCandidates, candidate)
+		}
+	}
+
+	if len(finalCandidates) == 0 {
+		return response, projerrors.ErrNoCandidate
+	}
+
+	index := rand.Intn(len(finalCandidates))
+	newReviewer := finalCandidates[index]
 
 	newAssignedReviewers := make([]string, len(pr.AssignedReviewers))
 	copy(newAssignedReviewers, pr.AssignedReviewers)
