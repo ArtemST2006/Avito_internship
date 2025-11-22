@@ -10,7 +10,7 @@ CREATE TABLE teams (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE pullrequests (
+CREATE TABLE pull_requests (
     pull_request_id VARCHAR(255) PRIMARY KEY,
     pull_request_name VARCHAR(255) NOT NULL,
     author_id VARCHAR(255) NOT NULL,

@@ -10,6 +10,7 @@ import (
 
 func InitBD() (*gorm.DB, error) {
 	dns, err := config.Get("DATABASE_URL")
+	fmt.Println(dns)
 	if err != nil {
 		return nil, fmt.Errorf("faild conn %w", err)
 	}

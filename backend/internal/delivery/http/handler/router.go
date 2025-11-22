@@ -28,23 +28,21 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	// team := router.Group("/team")
+	team := router.Group("/team")
 	{
-		// team.POST("/add", h.AddTeam)
-		// team.GET("/get", h.GetTeam)
+		team.POST("/add", h.AddTeam)
+		team.GET("/get", h.GetTeam)
 	}
-	// users := router.Group("/users")
+	users := router.Group("/users")
 	{
-		// users.POST(atePullRequest)
-		// pullRequest.POST("/merge", h.MergePullRequest)
-		// pullRequest.POST("/reassign", h.ReassignPullRequest)"/setIsActive", h.SetUserActive)
-		// users.GET("/getReview", h.GetUserReview)
+		users.POST("setIsActive", h.SetIsActive)
+		users.GET("/getReview", h.GetUserReview)
 	}
-	// pullRequest := router.Group("/pullRequest")
+	pullRequest := router.Group("/pullRequest")
 	{
-		// pullRequest.POST("/create", h.CreatePullRequest)
-		// pullRequest.POST("/merge", h.MergePullRequest)
-		// pullRequest.POST("/reassign", h.ReassignPullRequest)
+		pullRequest.POST("/create", h.CreatePullRequest)
+		pullRequest.POST("/merge", h.MergePullRequest)
+		pullRequest.POST("/reassign", h.ReassignPullRequest)
 	}
 
 	return router

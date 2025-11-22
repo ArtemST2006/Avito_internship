@@ -1,0 +1,75 @@
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+*.out
+
+# Go build, test, and tools
+*.test
+*.prof
+*.trace
+*.html
+*.cov
+*.log
+*.tmp
+*.mod
+*.sum
+!go.mod
+!go.sum
+
+# Build artifacts
+bin/
+dist/
+build/
+
+# Environment specific
+.env
+.env.local
+.env.*.local
+.env.production
+.env.production.local
+
+# Logs
+logs/
+*.log
+
+# Coverage
+coverage.out
+coverage.html
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Docker
+.dockerignore
+.docker/
+
+# Database
+*.db
+*.db-journal
+
+# Tools
+tools/tools.go
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Kubernetes
+.kube/
+.k8s/
+
+# Temporary files
+tmp/
+temp/

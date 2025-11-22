@@ -1,5 +1,7 @@
 package schemas
 
+import "time"
+
 type User struct {
 	UserId   string `gorm:"column:user_id;primaryKey" json:"user_id" binding:"required"`
 	UserName string `gorm:"column:username" json:"username" binding:"required"`
@@ -13,19 +15,19 @@ type TeamMember struct {
 	IsActive bool   `gorm:"column:is_active" json:"is_active" binding:"required"`
 }
 
-type Team struct {
-	TeamName string       `gorm:"column:team_name;primaryKey" json:"team_name" binding:"required"`
-	Members  []TeamMember `gorm:"-" json:"members" binding:"required"`
+type Teams struct {
+	TeamName  string    `gorm:"column:team_name;primaryKey" json:"team_name" binding:"required"`
+	CreatedAt time.Time `gorm:"column:created_at" json:"createdAt,omitempty"`
 }
 
 type PullRequest struct {
-	PullRequestID     string   `gorm:"column:pull_request_id;primaryKey" json:"pull_request_id" binding:"required"`
-	PullRequestName   string   `gorm:"column:pull_request_name" json:"pull_request_name" binding:"required"`
-	AuthorID          string   `gorm:"column:author_id" json:"author_id" binding:"required"`
-	Status            string   `gorm:"column:status" json:"status" binding:"required"` // "OPEN" или "MERGED"
-	AssignedReviewers []string `gorm:"column:assigned_reviewers" json:"assigned_reviewers"`
-	CreatedAt         string   `gorm:"column:created_at" json:"createdAt,omitempty"`
-	MergedAt          string   `gorm:"column:merged_at" json:"mergedAt,omitempty"`
+	PullRequestID     string    `gorm:"column:pull_request_id;primaryKey" json:"pull_request_id" binding:"required"`
+	PullRequestName   string    `gorm:"column:pull_request_name" json:"pull_request_name" binding:"required"`
+	AuthorID          string    `gorm:"column:author_id" json:"author_id" binding:"required"`
+	Status            string    `gorm:"column:status" json:"status" binding:"required"`
+	AssignedReviewers []string  `gorm:"column:assigned_reviewers;type:jsonb;serializer:json" json:"assigned_reviewers"`
+	CreatedAt         time.Time `gorm:"column:created_at" json:"createdAt,omitempty"`
+	MergedAt          time.Time `gorm:"column:merged_at" json:"mergedAt,omitempty"`
 }
 
 // type PullRequestShort struct {

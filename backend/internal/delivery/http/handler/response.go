@@ -2,10 +2,15 @@ package handler
 
 import "github.com/gin-gonic/gin"
 
-type errorResponse struct {
-	Message string `json:"message"`
-}
+// type errorResponse struct {
+// 	Error string `json:"error"`
+// }
 
-func NewResponseError(c *gin.Context, status int, message string) {
-	c.AbortWithStatusJSON(status, errorResponse{message})
+func NewResponseError(c *gin.Context, status int, code, message string) {
+	c.AbortWithStatusJSON(status, gin.H{
+		"error": gin.H{
+			"code":    code,
+			"message": message,
+		},
+	})
 }
