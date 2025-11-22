@@ -1,0 +1,38 @@
+FROM golang:latest AS builder
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o main ./cmd/app
+
+FROM alpine:latest
+
+RUN apk add --no-cache libc6-compat ca-certificates curl
+
+WORKDIR /root/
+COPY --from=builder /app/main .
+COPY --from=builder /app/migrations ./migrations
+
+# Скачиваем бинарный файл напрямую (не архив)
+RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.2/migrate.linux-amd64 -o migrate && \
+    chmod +x migrate
+
+RUN echo '#!/bin/sh' > entrypoint.sh && \
+    echo '' >> entrypoint.sh && \
+    echo 'if [ ! -f /root/migrations_done ]; then' >> entrypoint.sh && \
+    echo '  echo "Running migrations..."' >> entrypoint.sh && \
+    echo '  ./migrate -path ./migrations -database "$DATABASE_URL" up' >> entrypoint.sh && \
+    echo '  touch /root/migrations_done' >> entrypoint.sh && \
+    echo 'else' >> entrypoint.sh && \
+    echo '  echo "Migrations already applied"' >> entrypoint.sh && \
+    echo 'fi' >> entrypoint.sh && \
+    echo '' >> entrypoint.sh && \
+    echo 'echo "Starting main app..."' >> entrypoint.sh && \
+    echo 'exec ./main "$@"' >> entrypoint.sh && \
+    chmod +x entrypoint.sh
+
+ENTRYPOINT ["./entrypoint.sh"]
