@@ -27,7 +27,7 @@ services:
       DB_NAME: ${DB_NAME}
       SSL_MODE: ${SSL_MODE}
     ports:
-      - "8000:8000"
+      - "8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
