@@ -1,3 +1,4 @@
+// Package service описывает слой сервисов: интерфейсы для работы с сервисами.
 package service
 
 import (
@@ -22,10 +23,15 @@ type User interface {
 	GetUserReview(string) (schemas.GetUserPRResponse, error)
 }
 
+type Statistic interface {
+	Statistic() (schemas.StatisticResponse, error)
+}
+
 type Service struct {
 	Team
 	PullRequest
 	User
+	Statistic
 }
 
 func NewService(repo *repository.Repository) *Service {
@@ -33,5 +39,6 @@ func NewService(repo *repository.Repository) *Service {
 		PullRequest: serv.NewPullRequestService(repo),
 		Team:        serv.NewTeamService(repo),
 		User:        serv.NewUserService(repo),
+		Statistic:   serv.NewStatisticService(repo),
 	}
 }

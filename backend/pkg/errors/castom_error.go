@@ -1,3 +1,4 @@
+// Package projerrors описывает кастомные ошибки.
 package projerrors
 
 import (

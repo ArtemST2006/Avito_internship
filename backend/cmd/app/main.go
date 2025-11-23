@@ -1,3 +1,4 @@
+// Package main является точкой входа.
 package main
 
 import (

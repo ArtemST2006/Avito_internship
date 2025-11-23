@@ -44,6 +44,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		pullRequest.POST("/merge", h.MergePullRequest)
 		pullRequest.POST("/reassign", h.ReassignPullRequest)
 	}
+	statistic := router.Group("statistic")
+	{
+		statistic.GET("/get", h.Statistic)
+	}
 
 	return router
 }

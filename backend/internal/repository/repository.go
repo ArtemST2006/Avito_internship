@@ -1,3 +1,4 @@
+// Package repository описывает слой репозиториев: интерфейсы для работы с бд.
 package repository
 
 import (
@@ -22,10 +23,15 @@ type User interface {
 	GetUserReview(string) (schemas.GetUserPRResponse, error)
 }
 
+type Statistic interface {
+	Statistic() (schemas.StatisticResponse, error)
+}
+
 type Repository struct {
 	Team
 	PullRequest
 	User
+	Statistic
 }
 
 func NewRepository(db *gorm.DB) *Repository {
@@ -33,5 +39,6 @@ func NewRepository(db *gorm.DB) *Repository {
 		PullRequest: postgres.NewPullRequestRepo(db),
 		Team:        postgres.NewTeamRepo(db),
 		User:        postgres.NewUserPostgres(db),
+		Statistic:   postgres.NewStatisticPostgres(db),
 	}
 }

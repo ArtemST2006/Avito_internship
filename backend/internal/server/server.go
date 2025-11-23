@@ -1,3 +1,4 @@
+// Package server поднимает сервер для прослушки
 package server
 
 import (

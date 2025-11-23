@@ -1,3 +1,4 @@
+// Package postgres содержит реализацию методов для работы с бд
 package postgres
 
 import (
@@ -21,7 +22,7 @@ func NewPullRequestRepo(db *gorm.DB) *PullRequestRepo {
 }
 
 func (p *PullRequestRepo) MergePR(req schemas.PullRqMergeRequest) (schemas.PullRqResponse, error) {
-	prId := req.PullRequestId
+	prId := req.PullRequestID
 	pr := schemas.PullRequest{}
 
 	result := p.db.Where("pull_request_id = ?", prId).First(&pr)

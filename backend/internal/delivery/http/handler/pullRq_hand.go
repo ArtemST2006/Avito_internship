@@ -1,3 +1,4 @@
+// Package handler описывает слой хэндлеров, инициализирует роутер и маршритизирует запросы.
 package handler
 
 import (
@@ -49,7 +50,7 @@ func (h *Handler) CreatePullRequest(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusCreated, response)
 }
 
 func (h *Handler) ReassignPullRequest(c *gin.Context) {
